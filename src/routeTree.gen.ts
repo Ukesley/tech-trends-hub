@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as NovoArtigoRouteImport } from './routes/novo-artigo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CategoriaNameRouteImport } from './routes/categoria.$name'
 import { Route as ArtigoSlugRouteImport } from './routes/artigo.$slug'
 
+const NovoArtigoRoute = NovoArtigoRouteImport.update({
+  id: '/novo-artigo',
+  path: '/novo-artigo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,47 @@ const ArtigoSlugRoute = ArtigoSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/novo-artigo': typeof NovoArtigoRoute
   '/artigo/$slug': typeof ArtigoSlugRoute
   '/categoria/$name': typeof CategoriaNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/novo-artigo': typeof NovoArtigoRoute
   '/artigo/$slug': typeof ArtigoSlugRoute
   '/categoria/$name': typeof CategoriaNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/novo-artigo': typeof NovoArtigoRoute
   '/artigo/$slug': typeof ArtigoSlugRoute
   '/categoria/$name': typeof CategoriaNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/artigo/$slug' | '/categoria/$name'
+  fullPaths: '/' | '/novo-artigo' | '/artigo/$slug' | '/categoria/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/artigo/$slug' | '/categoria/$name'
-  id: '__root__' | '/' | '/artigo/$slug' | '/categoria/$name'
+  to: '/' | '/novo-artigo' | '/artigo/$slug' | '/categoria/$name'
+  id: '__root__' | '/' | '/novo-artigo' | '/artigo/$slug' | '/categoria/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NovoArtigoRoute: typeof NovoArtigoRoute
   ArtigoSlugRoute: typeof ArtigoSlugRoute
   CategoriaNameRoute: typeof CategoriaNameRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/novo-artigo': {
+      id: '/novo-artigo'
+      path: '/novo-artigo'
+      fullPath: '/novo-artigo'
+      preLoaderRoute: typeof NovoArtigoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NovoArtigoRoute: NovoArtigoRoute,
   ArtigoSlugRoute: ArtigoSlugRoute,
   CategoriaNameRoute: CategoriaNameRoute,
 }

@@ -180,3 +180,17 @@ export function getArticlesByCategory(category: string): Article[] {
   if (category === "Todos") return articles;
   return articles.filter((a) => a.category === category);
 }
+
+export function addArticle(newArticle: Omit<Article, "slug" | "author" | "authorInitials" | "date">) {
+  const date = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date()).replace(' de ', ' ');
+
+  const article: Article = {
+    ...newArticle,
+    slug: newArticle.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    author: "Kesley Barros",
+    authorInitials: "KB",
+    date,
+  };
+
+  articles.unshift(article);
+}

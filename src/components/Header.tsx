@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, Menu, X, TerminalSquare } from "lucide-react";
+import { Search, Menu, X, TerminalSquare, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { SearchDialog } from "./SearchDialog";
 import { SubscribeDialog } from "./SubscribeDialog";
@@ -59,6 +59,14 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            to="/novo-artigo"
+            className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80"
+          >
+            <PlusCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Novo</span>
+          </Link>
+
           {/* Search: aria-label so screen readers announce the purpose */}
           <button
             type="button"
