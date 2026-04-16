@@ -22,15 +22,15 @@ export const Route = createFileRoute("/categoria/$name")({
   },
   head: ({ params }) => ({
     meta: [
-      { title: `${params.name} — Compilado Tech` },
+      { title: `${params.name} — Compila Tecch` },
       {
         name: "description",
-        content: `Artigos sobre ${params.name} no Compilado Tech — Blog de Tecnologia.`,
+        content: `Artigos sobre ${params.name} no Compila Tecch — Blog de Tecnologia.`,
       },
-      { property: "og:title", content: `${params.name} — Compilado Tech` },
+      { property: "og:title", content: `${params.name} — Compila Tecch` },
       {
         property: "og:description",
-        content: `Artigos sobre ${params.name} no Compilado Tech.`,
+        content: `Artigos sobre ${params.name} no Compila Tecch.`,
       },
     ],
   }),

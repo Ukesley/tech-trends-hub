@@ -12,9 +12,9 @@ export const Route = createFileRoute("/artigo/$slug")({
     const article = getArticleBySlug(params.slug);
     return {
       meta: [
-        { title: article ? `${article.title} — Compilado Tech` : "Artigo — Compilado Tech" },
+        { title: article ? `${article.title} — Compila Tecch` : "Artigo — Compila Tecch" },
         { name: "description", content: article?.excerpt ?? "" },
-        { property: "og:title", content: article?.title ?? "Compilado Tech" },
+        { property: "og:title", content: article?.title ?? "Compila Tecch" },
         { property: "og:description", content: article?.excerpt ?? "" },
       ],
     };

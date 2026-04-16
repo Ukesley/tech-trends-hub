@@ -40,7 +40,7 @@ export function Header() {
             <TerminalSquare className="h-5 w-5 text-white" />
           </div>
           <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent transition-colors group-hover:from-neon group-hover:to-purple-500">
-            Compilado Tech
+            Compila Tecch
           </span>
         </Link>
 

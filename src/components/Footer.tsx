@@ -12,7 +12,7 @@ export function Footer() {
                 <TerminalSquare className="h-4 w-4 text-white" />
               </div>
               <span className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent transition-colors group-hover:from-neon group-hover:to-purple-500">
-                Compilado Tech
+                Compila Tecch
               </span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
@@ -57,7 +57,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-16 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          © 2026 Compilado Tech. Todos os direitos reservados.
+          © 2026 Compila Tecch. Todos os direitos reservados.
         </div>
       </div>
     </footer>
