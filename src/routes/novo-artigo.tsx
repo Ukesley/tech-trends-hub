@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Navigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { categories, addArticle } from "@/lib/articles";
+import { useAuth, isAuthenticated } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +27,11 @@ type FormValues = z.infer<typeof formSchema>;
 
 function NovoArtigoPage() {
     const navigate = useNavigate();
+    const { authed } = useAuth();
+
+    if (!authed && typeof window !== "undefined" && !isAuthenticated()) {
+        return <Navigate to="/login" replace />;
+    }
 
     const {
         register,

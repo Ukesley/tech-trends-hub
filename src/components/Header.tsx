@@ -3,6 +3,7 @@ import { Search, Menu, X, TerminalSquare, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { SearchDialog } from "./SearchDialog";
 import { SubscribeDialog } from "./SubscribeDialog";
+import { useAuth } from "@/lib/auth";
 
 const navItems = [
   { label: "Início", to: "/" as const },
@@ -28,6 +29,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [subscribeOpen, setSubscribeOpen] = useState(false);
+
+  const { authed, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -59,13 +62,25 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            to="/novo-artigo"
-            className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80"
-          >
-            <PlusCircle className="h-4 w-4" />
-            <span className="hidden sm:inline">Novo</span>
-          </Link>
+          {authed && (
+            <>
+              <Link
+                to="/novo-artigo"
+                className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-1.5 text-sm font-semibold text-secondary-foreground transition-colors hover:bg-secondary/80"
+              >
+                <PlusCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Novo Artigo</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="text-xs font-semibold text-muted-foreground hover:text-destructive hidden sm:block"
+                title="Sair da Conta de Autor"
+              >
+                Sair
+              </button>
+            </>
+          )}
 
           {/* Search: aria-label so screen readers announce the purpose */}
           <button
