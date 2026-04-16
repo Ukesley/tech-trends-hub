@@ -38,13 +38,13 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       // Restrict referrer info sent to third parties
       { name: "referrer", content: "strict-origin-when-cross-origin" },
-      { title: "Compila Tecch — Blog de Tecnologia" },
+      { title: "Compila Tech — Blog de Tecnologia" },
       {
         name: "description",
         content:
           "Notícias, análises e tendências do mundo da tecnologia. IA, segurança, cloud, hardware e desenvolvimento.",
       },
-      { property: "og:title", content: "Compila Tecch — Blog de Tecnologia" },
+      { property: "og:title", content: "Compila Tech — Blog de Tecnologia" },
       {
         property: "og:description",
         content: "Notícias, análises e tendências do mundo da tecnologia.",
