@@ -7,22 +7,6 @@ import { useAuth } from "@/lib/auth";
 
 const navItems = [
   { label: "Início", to: "/" as const },
-  { label: "IA", to: "/categoria/$name" as const, params: { name: "IA" } },
-  {
-    label: "Segurança",
-    to: "/categoria/$name" as const,
-    params: { name: "Segurança" },
-  },
-  {
-    label: "Cloud",
-    to: "/categoria/$name" as const,
-    params: { name: "Cloud" },
-  },
-  {
-    label: "Hardware",
-    to: "/categoria/$name" as const,
-    params: { name: "Hardware" },
-  },
 ];
 
 export function Header() {
@@ -52,7 +36,6 @@ export function Header() {
             <Link
               key={item.label}
               to={item.to}
-              params={"params" in item ? item.params : undefined}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "text-sm font-medium text-neon transition-colors" }}
             >
@@ -129,7 +112,6 @@ export function Header() {
               <Link
                 key={item.label}
                 to={item.to}
-                params={"params" in item ? item.params : undefined}
                 className="text-sm font-medium text-muted-foreground"
                 onClick={() => setMobileOpen(false)}
               >
