@@ -38,13 +38,13 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       // Restrict referrer info sent to third parties
       { name: "referrer", content: "strict-origin-when-cross-origin" },
-      { title: "Pulse — Blog de Tecnologia" },
+      { title: "Compilado Tech — Blog de Tecnologia" },
       {
         name: "description",
         content:
           "Notícias, análises e tendências do mundo da tecnologia. IA, segurança, cloud, hardware e desenvolvimento.",
       },
-      { property: "og:title", content: "Pulse — Blog de Tecnologia" },
+      { property: "og:title", content: "Compilado Tech — Blog de Tecnologia" },
       {
         property: "og:description",
         content: "Notícias, análises e tendências do mundo da tecnologia.",

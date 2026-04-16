@@ -22,15 +22,15 @@ export const Route = createFileRoute("/categoria/$name")({
   },
   head: ({ params }) => ({
     meta: [
-      { title: `${params.name} — Pulse` },
+      { title: `${params.name} — Compilado Tech` },
       {
         name: "description",
-        content: `Artigos sobre ${params.name} no Pulse — Blog de Tecnologia.`,
+        content: `Artigos sobre ${params.name} no Compilado Tech — Blog de Tecnologia.`,
       },
-      { property: "og:title", content: `${params.name} — Pulse` },
+      { property: "og:title", content: `${params.name} — Compilado Tech` },
       {
         property: "og:description",
-        content: `Artigos sobre ${params.name} no Pulse.`,
+        content: `Artigos sobre ${params.name} no Compilado Tech.`,
       },
     ],
   }),
@@ -65,8 +65,8 @@ function CategoryPage() {
               to={cat === "Todos" ? "/" : "/categoria/$name"}
               params={cat === "Todos" ? undefined : { name: cat }}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${cat === name
-                  ? "bg-neon text-neon-foreground"
-                  : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
+                ? "bg-neon text-neon-foreground"
+                : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
                 }`}
             >
               {cat}
