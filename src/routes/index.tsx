@@ -74,8 +74,8 @@ function HomePage() {
                 key={tab.key}
                 onClick={() => setActiveCategory(tab.key)}
                 className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${activeCategory === tab.key
-                    ? "bg-neon text-neon-foreground shadow-md shadow-neon/20"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  ? "bg-neon text-neon-foreground shadow-md shadow-neon/20"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                   }`}
               >
                 {tab.icon}

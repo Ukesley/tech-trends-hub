@@ -45,16 +45,26 @@ function cleanArticles(articles: NewsArticle[]): NewsArticle[] {
 }
 
 /**
- * Busca as principais manchetes de tecnologia do Brasil.
+ * Fetch com fallback para CORS proxy em produção.
+ * Em localhost a NewsAPI responde sem problemas.
+ * Em produção (Lovable/deploy) usamos um proxy público.
  */
-export async function fetchTopHeadlines(pageSize = 30): Promise<NewsArticle[]> {
-    const url = `${BASE_URL}/top-headlines?country=br&category=technology&pageSize=${pageSize}&apiKey=${API_KEY}`;
+async function fetchWithCorsProxy(apiUrl: string): Promise<Response> {
+    // Tenta direto primeiro (funciona em localhost e SSR)
+    try {
+        const res = await fetch(apiUrl);
+        if (res.ok) return res;
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Erro ao buscar manchetes: ${res.status}`);
-
-    const data: NewsApiResponse = await res.json();
-    return cleanArticles(data.articles);
+        // Se receber 426 ou CORS block em produção, tenta proxy
+        if (res.status === 426 || res.status === 403) {
+            throw new Error("CORS blocked");
+        }
+        return res;
+    } catch {
+        // Fallback: usa proxy CORS público
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
+        return fetch(proxyUrl);
+    }
 }
 
 /**
@@ -65,13 +75,13 @@ export async function fetchNewsByCategory(
     pageSize = 30
 ): Promise<NewsArticle[]> {
     const q = encodeURIComponent(CATEGORY_QUERIES[category]);
-    const url = `${BASE_URL}/everything?q=${q}&language=pt&sortBy=publishedAt&pageSize=${pageSize}&apiKey=${API_KEY}`;
+    const apiUrl = `${BASE_URL}/everything?q=${q}&language=pt&sortBy=publishedAt&pageSize=${pageSize}&apiKey=${API_KEY}`;
 
-    const res = await fetch(url);
+    const res = await fetchWithCorsProxy(apiUrl);
     if (!res.ok) throw new Error(`Erro ao buscar notícias: ${res.status}`);
 
-    const data: NewsApiResponse = await res.json();
-    return cleanArticles(data.articles);
+    const json: NewsApiResponse = await res.json();
+    return cleanArticles(json.articles);
 }
 
 /** Formatar data ISO para formato brasileiro legível */
