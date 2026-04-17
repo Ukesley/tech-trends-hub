@@ -19,7 +19,7 @@ interface NewsApiResponse {
 }
 
 /** Categorias disponíveis no portal */
-export type NewsCategory = "tecnologia" | "games" | "ciência";
+export type NewsCategory = "tecnologia" | "games" | "ciência" | "artigos";
 
 /** Termos de busca otimizados por categoria */
 const CATEGORY_QUERIES: Record<NewsCategory, string> = {
@@ -29,6 +29,7 @@ const CATEGORY_QUERIES: Record<NewsCategory, string> = {
         '(games OR videogame OR "jogos eletrônicos" OR PlayStation OR Xbox OR Nintendo OR "PC Gamer" OR eSports OR Steam OR "jogo mobile")',
     ciência:
         '(ciência OR "descoberta científica" OR NASA OR astronomia OR física OR genética OR "mudança climática" OR pesquisa OR "espaço sideral" OR neurociência)',
+    artigos: "", // Tratado localmente no componente
 };
 
 /** Limpa artigos inválidos / incompletos retornados pela API */

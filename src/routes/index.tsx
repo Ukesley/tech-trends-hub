@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -6,8 +6,9 @@ import { AdBanner } from "@/components/AdBanner";
 import { NewsCard, NewsCardSkeleton } from "@/components/NewsCard";
 import { fetchNewsByCategory, formatNewsDate } from "@/lib/newsApi";
 import type { NewsCategory, NewsArticle } from "@/lib/newsApi";
-import { ExternalLink, RefreshCw, Monitor, Gamepad2, FlaskConical } from "lucide-react";
-import { useState } from "react";
+import { ExternalLink, RefreshCw, Monitor, Gamepad2, FlaskConical, FileText } from "lucide-react";
+import { useState, useMemo } from "react";
+import { articles as localArticles } from "@/lib/articles";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -25,6 +26,7 @@ const CATEGORY_TABS: { key: NewsCategory; label: string; icon: React.ReactNode }
   { key: "tecnologia", label: "Tecnologia", icon: <Monitor className="h-4 w-4" /> },
   { key: "games", label: "Games", icon: <Gamepad2 className="h-4 w-4" /> },
   { key: "ciência", label: "Ciência", icon: <FlaskConical className="h-4 w-4" /> },
+  { key: "artigos", label: "Artigos", icon: <FileText className="h-4 w-4" /> },
 ];
 
 function HomePage() {
@@ -34,7 +36,7 @@ function HomePage() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const {
-    data: articles,
+    data: apiArticles,
     isLoading,
     error,
     refetch,
@@ -43,7 +45,24 @@ function HomePage() {
     queryFn: () => fetchNewsByCategory(activeCategory, 30),
     staleTime: 5 * 60 * 1000,
     retry: 2,
+    enabled: activeCategory !== "artigos",
   });
+
+  const articles = useMemo(() => {
+    if (activeCategory === "artigos") {
+      return localArticles.map((a) => ({
+        source: { id: null, name: "Compila Tech" },
+        author: a.author,
+        title: a.title,
+        description: a.excerpt,
+        url: a.slug, // Usado como slug interno
+        urlToImage: a.image,
+        publishedAt: new Date().toISOString(), // Fallback para data atual se o parse falhar
+        content: a.content,
+      })) as NewsArticle[];
+    }
+    return apiArticles ?? [];
+  }, [activeCategory, apiArticles]);
 
   const allNews: NewsArticle[] = articles ?? [];
   const featured = allNews[0];
@@ -130,36 +149,67 @@ function HomePage() {
                   <span>{formatNewsDate(featured.publishedAt)}</span>
                 </div>
                 <div className="mt-6 flex items-center gap-4">
+                  {activeCategory === "artigos" ? (
+                    <Link
+                      to="/artigo/$slug"
+                      params={{ slug: featured.url }}
+                      className="inline-flex items-center gap-2 rounded-full bg-neon px-6 py-2.5 text-sm font-semibold text-neon-foreground transition-colors hover:bg-primary/80"
+                    >
+                      Ler artigo completo <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    <a
+                      href={featured.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-neon px-6 py-2.5 text-sm font-semibold text-neon-foreground transition-colors hover:bg-primary/80"
+                    >
+                      Ler na fonte <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-7">
+                {activeCategory === "artigos" ? (
+                  <Link
+                    to="/artigo/$slug"
+                    params={{ slug: featured.url }}
+                    className="group block"
+                  >
+                    <div className="neon-glow overflow-hidden rounded-2xl">
+                      <img
+                        src={featured.urlToImage || PLACEHOLDER_IMG}
+                        alt={featured.title}
+                        width={1280}
+                        height={720}
+                        className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = PLACEHOLDER_IMG;
+                        }}
+                      />
+                    </div>
+                  </Link>
+                ) : (
                   <a
                     href={featured.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-neon px-6 py-2.5 text-sm font-semibold text-neon-foreground transition-colors hover:bg-primary/80"
+                    className="group block"
                   >
-                    Ler na fonte <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                    <div className="neon-glow overflow-hidden rounded-2xl">
+                      <img
+                        src={featured.urlToImage || PLACEHOLDER_IMG}
+                        alt={featured.title}
+                        width={1280}
+                        height={720}
+                        className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = PLACEHOLDER_IMG;
+                        }}
+                      />
+                    </div>
                   </a>
-                </div>
-              </div>
-              <div className="md:col-span-7">
-                <a
-                  href={featured.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block"
-                >
-                  <div className="neon-glow overflow-hidden rounded-2xl">
-                    <img
-                      src={featured.urlToImage || PLACEHOLDER_IMG}
-                      alt={featured.title}
-                      width={1280}
-                      height={720}
-                      className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = PLACEHOLDER_IMG;
-                      }}
-                    />
-                  </div>
-                </a>
+                )}
               </div>
             </div>
           ) : null}
@@ -192,8 +242,12 @@ function HomePage() {
               ? Array.from({ length: 6 }).map((_, i) => (
                 <NewsCardSkeleton key={i} />
               ))
-              : rest.map((article, i) => (
-                <NewsCard key={article.url + i} article={article} />
+              : articles.map((article, i) => (
+                <NewsCard
+                  key={article.url + i}
+                  article={article}
+                  isInternal={activeCategory === "artigos"}
+                />
               ))}
           </div>
 

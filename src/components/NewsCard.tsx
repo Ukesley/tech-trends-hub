@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 import type { NewsArticle } from "@/lib/newsApi";
 import { formatNewsDate } from "@/lib/newsApi";
@@ -5,7 +6,7 @@ import { formatNewsDate } from "@/lib/newsApi";
 const PLACEHOLDER_IMG =
     "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop";
 
-export function NewsCard({ article }: { article: NewsArticle }) {
+export function NewsCard({ article, isInternal }: { article: NewsArticle; isInternal?: boolean }) {
     const imgSrc = article.urlToImage || PLACEHOLDER_IMG;
     const sourceName = article.source?.name ?? "Fonte desconhecida";
     const authorName = article.author
@@ -17,13 +18,8 @@ export function NewsCard({ article }: { article: NewsArticle }) {
     // Não renderizar cards sem título
     if (!article.title) return null;
 
-    return (
-        <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-neon/5 hover:-translate-y-1"
-        >
+    const cardContent = (
+        <>
             {/* Imagem */}
             <div className="relative aspect-video overflow-hidden bg-muted">
                 <img
@@ -61,12 +57,37 @@ export function NewsCard({ article }: { article: NewsArticle }) {
                 </div>
 
                 <div className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-neon">
-                    Ler na fonte <ExternalLink className="h-3 w-3" />
+                    {isInternal ? "Ler artigo completo" : "Ler na fonte"} <ExternalLink className="h-3 w-3" />
                 </div>
             </div>
+        </>
+    );
+
+    if (isInternal) {
+        return (
+            <Link
+                to="/artigo/$slug"
+                params={{ slug: article.url }} // No mapeamento, passaremos o slug no campo url
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-neon/5 hover:-translate-y-1"
+            >
+                {cardContent}
+            </Link>
+        );
+    }
+
+    return (
+        <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-neon/5 hover:-translate-y-1"
+        >
+            {cardContent}
         </a>
     );
 }
+
+// ... rest of file
 
 /** Skeleton para carregamento */
 export function NewsCardSkeleton() {
