@@ -18,11 +18,24 @@ interface NewsApiResponse {
     articles: NewsArticle[];
 }
 
+/** Limpa artigos inválidos / incompletos retornados pela API */
+function cleanArticles(articles: NewsArticle[]): NewsArticle[] {
+    return articles.filter(
+        (a) =>
+            a.title &&
+            a.title !== "[Removed]" &&
+            a.description &&
+            a.description !== "[Removed]" &&
+            a.url &&
+            a.url !== "https://removed.com"
+    );
+}
+
 /**
  * Busca as principais manchetes de tecnologia do Brasil.
  * Usando `country=br` + `category=technology` garantimos resultados nativos em pt-BR.
  */
-export async function fetchTechNews(pageSize = 20): Promise<NewsArticle[]> {
+export async function fetchTechNews(pageSize = 30): Promise<NewsArticle[]> {
     const url = `${BASE_URL}/top-headlines?country=br&category=technology&pageSize=${pageSize}&apiKey=${API_KEY}`;
 
     const res = await fetch(url);
@@ -32,19 +45,18 @@ export async function fetchTechNews(pageSize = 20): Promise<NewsArticle[]> {
     }
 
     const data: NewsApiResponse = await res.json();
-
-    // Filtrar artigos que foram removidos pela API ("[Removed]")
-    return data.articles.filter(
-        (a) => a.title !== "[Removed]" && a.description !== "[Removed]"
-    );
+    return cleanArticles(data.articles);
 }
 
 /**
  * Buscar tudo sobre tecnologia (endpoint /everything) para ter mais volume.
- * Útil como fallback se o top-headlines retornar poucos resultados.
+ * Usa termos focados em tecnologia real para melhor relevância.
  */
 export async function fetchEverythingTech(pageSize = 30): Promise<NewsArticle[]> {
-    const url = `${BASE_URL}/everything?q=tecnologia OR inteligência artificial OR programação&language=pt&sortBy=publishedAt&pageSize=${pageSize}&apiKey=${API_KEY}`;
+    const keywords = encodeURIComponent(
+        '(tecnologia OR "inteligência artificial" OR programação OR cibersegurança OR startup OR "machine learning" OR smartphone OR software OR hardware OR "dados" OR inovação)'
+    );
+    const url = `${BASE_URL}/everything?q=${keywords}&language=pt&sortBy=publishedAt&pageSize=${pageSize}&apiKey=${API_KEY}`;
 
     const res = await fetch(url);
 
@@ -53,10 +65,7 @@ export async function fetchEverythingTech(pageSize = 30): Promise<NewsArticle[]>
     }
 
     const data: NewsApiResponse = await res.json();
-
-    return data.articles.filter(
-        (a) => a.title !== "[Removed]" && a.description !== "[Removed]"
-    );
+    return cleanArticles(data.articles);
 }
 
 /** Formatar data ISO para formato brasileiro legível */

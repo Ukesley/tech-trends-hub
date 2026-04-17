@@ -8,7 +8,14 @@ const PLACEHOLDER_IMG =
 export function NewsCard({ article }: { article: NewsArticle }) {
     const imgSrc = article.urlToImage || PLACEHOLDER_IMG;
     const sourceName = article.source?.name ?? "Fonte desconhecida";
-    const authorName = article.author ?? sourceName;
+    const authorName = article.author
+        ? article.author.length > 40
+            ? article.author.substring(0, 40) + "..."
+            : article.author
+        : sourceName;
+
+    // Não renderizar cards sem título
+    if (!article.title) return null;
 
     return (
         <a
@@ -18,7 +25,7 @@ export function NewsCard({ article }: { article: NewsArticle }) {
             className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:shadow-lg hover:shadow-neon/5 hover:-translate-y-1"
         >
             {/* Imagem */}
-            <div className="relative aspect-video overflow-hidden">
+            <div className="relative aspect-video overflow-hidden bg-muted">
                 <img
                     src={imgSrc}
                     alt={article.title}
