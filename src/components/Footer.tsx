@@ -56,8 +56,19 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-16 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          © 2026 Compila Tech. Todos os direitos reservados.
+        <div className="mt-16 border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+          <p>© 2026 Compila Tech. Todos os direitos reservados.</p>
+          <p>
+            Powered by{" "}
+            <a
+              href="https://newsapi.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-neon underline-offset-4 hover:underline"
+            >
+              NewsAPI.org
+            </a>
+          </p>
         </div>
       </div>
     </footer>
