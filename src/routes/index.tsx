@@ -1,12 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AdBanner } from "@/components/AdBanner";
 import { NewsCard, NewsCardSkeleton } from "@/components/NewsCard";
-import { fetchTechNews, fetchEverythingTech, formatNewsDate } from "@/lib/newsApi";
-import type { NewsArticle } from "@/lib/newsApi";
-import { ArrowRight, ExternalLink, RefreshCw } from "lucide-react";
+import { fetchNewsByCategory, formatNewsDate } from "@/lib/newsApi";
+import type { NewsCategory, NewsArticle } from "@/lib/newsApi";
+import { ExternalLink, RefreshCw, Monitor, Gamepad2, FlaskConical } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/")({
@@ -21,45 +21,31 @@ type NewsletterState = "idle" | "success" | "error";
 const PLACEHOLDER_IMG =
   "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1280&auto=format&fit=crop";
 
+const CATEGORY_TABS: { key: NewsCategory; label: string; icon: React.ReactNode }[] = [
+  { key: "tecnologia", label: "Tecnologia", icon: <Monitor className="h-4 w-4" /> },
+  { key: "games", label: "Games", icon: <Gamepad2 className="h-4 w-4" /> },
+  { key: "ciência", label: "Ciência", icon: <FlaskConical className="h-4 w-4" /> },
+];
+
 function HomePage() {
+  const [activeCategory, setActiveCategory] = useState<NewsCategory>("tecnologia");
   const [email, setEmail] = useState("");
-  const [newsletterState, setNewsletterState] =
-    useState<NewsletterState>("idle");
+  const [newsletterState, setNewsletterState] = useState<NewsletterState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Buscar notícias de tecnologia do Brasil
   const {
-    data: headlines,
-    isLoading: loadingHeadlines,
-    error: headlinesError,
+    data: articles,
+    isLoading,
+    error,
     refetch,
   } = useQuery({
-    queryKey: ["tech-headlines"],
-    queryFn: () => fetchTechNews(20),
-    staleTime: 5 * 60 * 1000, // Cache de 5 minutos
+    queryKey: ["news", activeCategory],
+    queryFn: () => fetchNewsByCategory(activeCategory, 30),
+    staleTime: 5 * 60 * 1000,
     retry: 2,
   });
 
-  // Buscar notícias complementares (everything)
-  const { data: extraNews, isLoading: loadingExtra } = useQuery({
-    queryKey: ["tech-everything"],
-    queryFn: () => fetchEverythingTech(20),
-    staleTime: 5 * 60 * 1000,
-    retry: 1,
-  });
-
-  const isLoading = loadingHeadlines;
-
-  // Combinar manchetes e extras, removendo duplicatas por URL
-  const allNews: NewsArticle[] = [];
-  const seenUrls = new Set<string>();
-  for (const article of [...(headlines ?? []), ...(extraNews ?? [])]) {
-    if (!seenUrls.has(article.url)) {
-      seenUrls.add(article.url);
-      allNews.push(article);
-    }
-  }
-
+  const allNews: NewsArticle[] = articles ?? [];
   const featured = allNews[0];
   const rest = allNews.slice(1);
 
@@ -80,8 +66,27 @@ function HomePage() {
       <Header />
 
       <main>
+        {/* Category Tabs */}
+        <section className="mx-auto max-w-7xl px-6 pt-8">
+          <div className="flex flex-wrap items-center gap-3">
+            {CATEGORY_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveCategory(tab.key)}
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${activeCategory === tab.key
+                    ? "bg-neon text-neon-foreground shadow-md shadow-neon/20"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* Hero featured article */}
-        <section className="mx-auto max-w-7xl px-6 py-12 md:py-20">
+        <section className="mx-auto max-w-7xl px-6 py-12 md:py-16">
           {isLoading ? (
             <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-12 md:gap-12 animate-pulse">
               <div className="md:col-span-5 space-y-4">
@@ -95,7 +100,7 @@ function HomePage() {
                 <div className="aspect-video rounded-2xl bg-muted" />
               </div>
             </div>
-          ) : headlinesError ? (
+          ) : error ? (
             <div className="text-center py-20">
               <p className="text-destructive font-semibold">
                 Erro ao carregar notícias. Verifique sua conexão.
@@ -169,7 +174,9 @@ function HomePage() {
         <section className="mx-auto max-w-7xl px-6 py-16">
           <div className="mb-10 flex items-center justify-between">
             <h2 className="font-display text-2xl font-bold text-foreground md:text-3xl">
-              Últimas Notícias de Tecnologia
+              {activeCategory === "tecnologia" && "Últimas de Tecnologia"}
+              {activeCategory === "games" && "Últimas de Games"}
+              {activeCategory === "ciência" && "Últimas de Ciência"}
             </h2>
             <button
               onClick={() => refetch()}
@@ -190,7 +197,7 @@ function HomePage() {
               ))}
           </div>
 
-          {!isLoading && rest.length === 0 && !headlinesError && (
+          {!isLoading && rest.length === 0 && !error && (
             <p className="text-center text-muted-foreground py-12">
               Nenhuma notícia encontrada no momento. Tente novamente mais tarde.
             </p>
@@ -264,7 +271,6 @@ function HomePage() {
               </form>
             )}
 
-            {/* Accessible inline error message */}
             {newsletterState === "error" && (
               <p
                 id="newsletter-error"
